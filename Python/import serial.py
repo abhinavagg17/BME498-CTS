@@ -7,7 +7,7 @@ import time
 # the arduino sketch we are working with is "MPU6050_DMP6" example in the MPU6050 subfolder of I2C Arduino documentation
 
 arduino1 = serial.Serial(port='COM5', baudrate=300)
-arduino2 = serial.Serial(port='COM5', baudrate=300)
+arduino2 = serial.Serial(port='COM9', baudrate=300)
 
 # we aren't writing to the microcontroller so the write portion of this function does  not matter
 # i think there are methods we can apply after readline() to further process the data as it gets read into python (things like strip, for example)
