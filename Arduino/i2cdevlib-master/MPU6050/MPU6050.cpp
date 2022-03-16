@@ -3393,3 +3393,39 @@ void MPU6050_Base::PrintActiveOffsets() {
     Serial.print((float)Data[1], 5); Serial.print(",  ");
     Serial.print((float)Data[2], 5); Serial.print("\n");
 }
+
+int16_t * MPU6050_Base::ReturnActiveOffsets() {
+	uint8_t AOffsetRegister = (getDeviceID() < 0x38 )? MPU6050_RA_XA_OFFS_H:0x77;
+	int16_t Data[3];
+    int16_t AllData[6];
+
+	//Serial.print(F("Offset Register 0x"));
+	//Serial.print(AOffsetRegister>>4,HEX);Serial.print(AOffsetRegister&0x0F,HEX);
+	Serial.print(F("\n//         X Accel  Y Accel  Z Accel   X Gyro   Y Gyro   Z Gyro\n// OFFSETS "));
+	if(AOffsetRegister == 0x06)	I2Cdev::readWords(devAddr, AOffsetRegister, 3, (uint16_t *)Data, I2Cdev::readTimeout, wireObj);
+	else {
+		I2Cdev::readWords(devAddr, AOffsetRegister, 1, (uint16_t *)Data, I2Cdev::readTimeout, wireObj);
+		I2Cdev::readWords(devAddr, AOffsetRegister+3, 1, (uint16_t *)Data+1, I2Cdev::readTimeout, wireObj);
+		I2Cdev::readWords(devAddr, AOffsetRegister+6, 1, (uint16_t *)Data+2, I2Cdev::readTimeout, wireObj);
+	}
+	//	A_OFFSET_H_READ_A_OFFS(Data);
+    // Serial.print((float)Data[0], 5); Serial.print(",  ");
+    // Serial.print((float)Data[1], 5); Serial.print(",  ");
+    // Serial.print((float)Data[2], 5); Serial.print(",  ");
+
+    for (int i = 0; i < 3; i++) {
+        AllData[i] = Data[i];
+    }
+
+	I2Cdev::readWords(devAddr, 0x13, 3, (uint16_t *)Data, I2Cdev::readTimeout, wireObj);
+	//	XG_OFFSET_H_READ_OFFS_USR(Data);
+    // Serial.print((float)Data[0], 5); Serial.print(",  ");
+    // Serial.print((float)Data[1], 5); Serial.print(",  ");
+    // Serial.print((float)Data[2], 5); Serial.print("\n");
+
+    for (int i = 0; i < 3; i++) {
+        AllData[i + 3] = Data[i];
+    }
+
+    return AllData;
+}
