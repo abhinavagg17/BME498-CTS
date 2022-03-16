@@ -11,13 +11,18 @@ arduino2 = serial.Serial(port='COM9', baudrate=300)
 
 # we aren't writing to the microcontroller so the write portion of this function does  not matter
 # i think there are methods we can apply after readline() to further process the data as it gets read into python (things like strip, for example)
-def write_read(arduino, x):
-    arduino.write(bytes(x, 'utf-8'))
-    time.sleep(0.05)
-    data = arduino.readline()
-    return data
+# def write_read(arduino, x):
+#     arduino.write(bytes(x, 'utf-8'))
+#     time.sleep(0.05)
+#     data = arduino.readline()
+#     return data
+
+def read(arduino):
+   data = arduino.readline()
+   return data
 
 def parse_read(read):
+    read = read.split()
     yaw_pitch_roll_strlist = read[3:6]
     return [float(i) for i in yaw_pitch_roll_strlist]
 
@@ -29,8 +34,10 @@ def relative_angles(ypr1, ypr2):
     return delta_ypr
 
 while True:
-    read1 = write_read(arduino1)
-    read2 = write_read(arduino2)
+    # read1 = write_read(arduino1)
+    # read2 = write_read(arduino2)
+    read1 = read(arduino1)
+    read2 = read(arduino2)
     # Might need these 2 lines, but I'm not sure
     # read1 = read1.decode("utf-8")
     # read2 = read2.decode("utf-8")
@@ -47,8 +54,4 @@ while True:
     # print(value)
     #val = read()
     #print(val, flush=True)
-
-#def read():
-#    data = arduino.readline()
-#    return data
 
