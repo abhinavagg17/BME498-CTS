@@ -12,7 +12,7 @@ arduino2 = serial.Serial(port='COM5', baudrate=300)
 def read():
     data1 = arduino1.readline()
     data2 = arduino2.readline()
-    return (data1, data2) 
+    return (data2) 
 
 while True:
     val = read()
