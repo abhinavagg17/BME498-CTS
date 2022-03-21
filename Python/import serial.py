@@ -41,7 +41,7 @@ def relative_angles(ypr1, ypr2):
 
 def read_print_loop():
 
-    baudrate = 300
+    baudrate = 10
     arduino1 = initialize_arduino('COM5', baudrate)
     arduino2 = initialize_arduino('COM9', baudrate)
 
