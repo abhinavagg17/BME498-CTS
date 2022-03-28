@@ -27,13 +27,13 @@ def zero_readings(baudrate, arduino1, arduino2):
     initial_YPR_reads = [[], [], []]
     
     for i in range(0, baudrate):
-        record_angles(initial_YPR_reads)
+        record_angles(initial_YPR_reads, arduino1, arduino2)
         print(str(i) + " Initializing...")
 
     offsets_YPR = []
-    offsets_YPR[0] = sum(initial_YPR_reads[0]) / baudrate
-    offsets_YPR[1] = sum(initial_YPR_reads[1]) / baudrate
-    offsets_YPR[2] = sum(initial_YPR_reads[2]) / baudrate
+    offsets_YPR.append(sum(initial_YPR_reads[0]) / baudrate)
+    offsets_YPR.append(sum(initial_YPR_reads[1]) / baudrate)
+    offsets_YPR.append(sum(initial_YPR_reads[2]) / baudrate)
 
     return offsets_YPR
 
