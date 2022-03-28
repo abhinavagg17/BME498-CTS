@@ -23,6 +23,20 @@ import time
 def initialize_arduino(port, baudrate):
     return serial.Serial(port=port, baudrate=baudrate)
 
+def zero_readings(baudrate, arduino1, arduino2):
+    initial_YPR_reads = [[], [], []]
+    
+    for i in range(0, baudrate):
+        record_angles(initial_YPR_reads)
+        print(str(i) + " Initializing...")
+
+    offsets_YPR = []
+    offsets_YPR[0] = sum(initial_YPR_reads[0]) / baudrate
+    offsets_YPR[1] = sum(initial_YPR_reads[1]) / baudrate
+    offsets_YPR[2] = sum(initial_YPR_reads[2]) / baudrate
+
+    return offsets_YPR
+
 def read(arduino):
    data = arduino.readline()
    return data
@@ -39,34 +53,45 @@ def relative_angles(ypr1, ypr2):
         delta_ypr.append(delta)
     return delta_ypr
 
+def record_angles(YPR_list, arduino1, arduino2):
+    read1 = read(arduino1)
+    read2 = read(arduino2)
+
+    ypr1 = parse_read(read1)
+    ypr2 = parse_read(read2)
+    orientation = relative_angles(ypr1, ypr2)
+    YPR_list[0].append(orientation[0])
+    YPR_list[1].append(orientation[1])
+    YPR_list[2].append(orientation[2])
+
 def read_print_loop():
 
     baudrate = 10
     arduino1 = initialize_arduino('COM5', baudrate)
     arduino2 = initialize_arduino('COM9', baudrate)
 
+    offset_YPR = zero_readings(baudrate, arduino1, arduino2)
+
     while True:
-        reading_storage_Y = []
-        reading_storage_P = []
-        reading_storage_R = []
+        # reading_storage_Y = []
+        # reading_storage_P = []
+        # reading_storage_R = []
+        reading_storage_YPR = [[], [], []]
 
-        while (len(reading_storage_Y) < baudrate):
-            read1 = read(arduino1)
-            read2 = read(arduino2)
+        while (len(reading_storage_YPR[0]) < baudrate):
+            record_angles(reading_storage_YPR, arduino1, arduino2)
 
-            ypr1 = parse_read(read1)
-            ypr2 = parse_read(read2)
-            orientation = relative_angles(ypr1, ypr2)
-            reading_storage_Y.append(orientation[0])
-            reading_storage_P.append(orientation[1])
-            reading_storage_R.append(orientation[2])
-            # print(orientation)
+        Y_per_second = sum(reading_storage_YPR[0]) / baudrate
+        P_per_second = sum(reading_storage_YPR[1]) / baudrate
+        R_per_second = sum(reading_storage_YPR[2]) / baudrate
 
-        Y_per_second = sum(reading_storage_Y) / baudrate
-        P_per_second = sum(reading_storage_P) / baudrate
-        R_per_second = sum(reading_storage_R) / baudrate
+        Y_adjusted = int(Y_per_second - offset_YPR[0])
+        P_adjusted = int(P_per_second - offset_YPR[1])
+        R_adjusted = int(R_per_second - offset_YPR[2])
 
-        print(Y_per_second, P_per_second, R_per_second)
+        # X-axis is Roll, Y-axis, is Pitch, Z-axis is Yaw
+        # print("yaw: " + str(Y_per_second) , "pitch: " + str(P_per_second), "roll: " + str(R_per_second))
+        print(f"x-axis: {R_adjusted}, y-axis: {P_adjusted}, z-axis: {Y_adjusted}")
 
 def main():
     read_print_loop()
