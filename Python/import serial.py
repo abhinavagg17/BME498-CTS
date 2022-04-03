@@ -66,9 +66,10 @@ def record_angles(YPR_list, arduino1, arduino2):
 
 def read_print_loop():
 
-    print("Enter file name to create and write to:")
-    file_name = input()
-    open_file = open(file_name, "a")
+    #print("Enter file name to create and write to:")
+    #file_name = input()
+    #file_name = 'test.txt'
+    #open_file = open(file_name, "a")
 
     baudrate = 10
     arduino1 = initialize_arduino('COM5', baudrate)
@@ -89,16 +90,16 @@ def read_print_loop():
         P_per_second = sum(reading_storage_YPR[1]) / baudrate
         R_per_second = sum(reading_storage_YPR[2]) / baudrate
 
-        Y_adjusted = int(Y_per_second - offset_YPR[0])
-        P_adjusted = int(P_per_second - offset_YPR[1])
-        R_adjusted = int(R_per_second - offset_YPR[2])
+        Y_adjusted = round((Y_per_second - offset_YPR[0]), 1)
+        P_adjusted = round((P_per_second - offset_YPR[1]), 1)
+        R_adjusted = round((R_per_second - offset_YPR[2]), 1)
 
         # X-axis is Roll, Y-axis, is Pitch, Z-axis is Yaw
         # print("yaw: " + str(Y_per_second) , "pitch: " + str(P_per_second), "roll: " + str(R_per_second))
         formatted_string = f"x-axis: {R_adjusted}, y-axis: {P_adjusted}, z-axis: {Y_adjusted}"
 
         print(formatted_string)
-        open_file.write(formatted_string + "\n")
+        #open_file.write('test')
 
 def main():
     read_print_loop()
