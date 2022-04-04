@@ -69,12 +69,22 @@ def read_print_loop():
     print("Enter file name to create and write to:")
     file_name = input()
     open_file = open(file_name, "a")
+    open_file.write("Hello World!" + "\n")
+    open_file.write("Hello World!" + "\n")
 
     baudrate = 10
     arduino1 = initialize_arduino('COM5', baudrate)
     arduino2 = initialize_arduino('COM9', baudrate)
 
     offset_YPR = zero_readings(baudrate, arduino1, arduino2)
+
+    read_buffer = [[], [], []]
+    risk_period = 5
+    ulnar_limit = 20
+    radial_limit = -22
+    flexion_limit = 55
+    extension_limit = -32
+
 
     while True:
         # reading_storage_Y = []
@@ -89,9 +99,9 @@ def read_print_loop():
         P_per_second = sum(reading_storage_YPR[1]) / baudrate
         R_per_second = sum(reading_storage_YPR[2]) / baudrate
 
-        Y_adjusted = int(Y_per_second - offset_YPR[0])
-        P_adjusted = int(P_per_second - offset_YPR[1])
-        R_adjusted = int(R_per_second - offset_YPR[2])
+        Y_adjusted = round((Y_per_second - offset_YPR[0]), 1)
+        P_adjusted = round((P_per_second - offset_YPR[1]), 1)
+        R_adjusted = round((R_per_second - offset_YPR[2]), 1)
 
         # X-axis is Roll, Y-axis, is Pitch, Z-axis is Yaw
         # print("yaw: " + str(Y_per_second) , "pitch: " + str(P_per_second), "roll: " + str(R_per_second))
@@ -99,6 +109,33 @@ def read_print_loop():
 
         print(formatted_string)
         open_file.write(formatted_string + "\n")
+
+        if (len(read_buffer[0]) < risk_period):
+            read_buffer[0].append(Y_adjusted)
+            read_buffer[1].append(P_adjusted)
+            read_buffer[2].append(R_adjusted)
+        else:
+            read_buffer[0].pop(0)
+            read_buffer[1].pop(0)
+            read_buffer[2].pop(0)
+
+            read_buffer[0].append(Y_adjusted)
+            read_buffer[1].append(P_adjusted)
+            read_buffer[2].append(R_adjusted)
+
+            if ((sum(read_buffer[0]) / risk_period) > ulnar_limit and read_buffer[-1] > ulnar_limit):
+                print("Ulnar deviation limit exceeded!")
+
+            if ((sum(read_buffer[0]) / risk_period) < radial_limit and read_buffer[-1] < radial_limit):
+
+                print("Radial deviation limit exceeded!")
+
+            if ((sum(read_buffer[1]) / risk_period) > flexion_limit and read_buffer[-1] > flexion_limit):
+                print("Wrist flexion limit exceeded!")
+
+            if ((sum(read_buffer[1]) / risk_period) < extension_limit and read_buffer[-1] < extension_limit):
+                print("Wrist extension limit exceeded!")
+
 
 def main():
     read_print_loop()
