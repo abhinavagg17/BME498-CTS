@@ -81,8 +81,8 @@ def read_print_loop():
     risk_period = 5
     ulnar_limit = 20
     radial_limit = -22
-    flexion_limit = 55
-    extension_limit = -32
+    flexion_limit = -55
+    extension_limit = 32
 
 
     while True:
@@ -122,17 +122,17 @@ def read_print_loop():
             read_buffer[1].append(P_adjusted)
             read_buffer[2].append(R_adjusted)
 
-            if ((sum(read_buffer[0]) / risk_period) > ulnar_limit and read_buffer[-1] > ulnar_limit):
+            if ((sum(read_buffer[0]) / risk_period) > ulnar_limit and read_buffer[0][-1] > ulnar_limit):
                 print("Ulnar deviation limit exceeded!")
 
-            if ((sum(read_buffer[0]) / risk_period) < radial_limit and read_buffer[-1] < radial_limit):
+            if ((sum(read_buffer[0]) / risk_period) < radial_limit and read_buffer[0][-1] < radial_limit):
 
                 print("Radial deviation limit exceeded!")
 
-            if ((sum(read_buffer[1]) / risk_period) > flexion_limit and read_buffer[-1] > flexion_limit):
+            if ((sum(read_buffer[2]) / risk_period) < flexion_limit and read_buffer[2][-1] < flexion_limit):
                 print("Wrist flexion limit exceeded!")
 
-            if ((sum(read_buffer[1]) / risk_period) < extension_limit and read_buffer[-1] < extension_limit):
+            if ((sum(read_buffer[2]) / risk_period) > extension_limit and read_buffer[2][-1] > extension_limit):
                 print("Wrist extension limit exceeded!")
 
 
