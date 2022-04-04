@@ -66,11 +66,18 @@ def record_angles(YPR_list, arduino1, arduino2):
 
 def read_print_loop():
 
+<<<<<<< HEAD
     print("Enter file name to create and write to:")
     file_name = input()
     open_file = open(file_name, "a")
     open_file.write("Hello World!" + "\n")
     open_file.write("Hello World!" + "\n")
+=======
+    #print("Enter file name to create and write to:")
+    #file_name = input()
+    #file_name = 'test.txt'
+    #open_file = open(file_name, "a")
+>>>>>>> a07a36e56dbf43a9413e2ba417b0ae2fcefdee78
 
     baudrate = 10
     arduino1 = initialize_arduino('COM5', baudrate)
@@ -108,7 +115,7 @@ def read_print_loop():
         formatted_string = f"x-axis: {R_adjusted}, y-axis: {P_adjusted}, z-axis: {Y_adjusted}"
 
         print(formatted_string)
-        open_file.write(formatted_string + "\n")
+        #open_file.write('test')
 
         if (len(read_buffer[0]) < risk_period):
             read_buffer[0].append(Y_adjusted)
