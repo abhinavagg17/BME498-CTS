@@ -79,10 +79,10 @@ def read_print_loop():
 
     read_buffer = [[], [], []]
     risk_period = 5
-    ulnar_limit = 20
-    radial_limit = -22
-    flexion_limit = -55
-    extension_limit = 32
+    ulnar_limit = 14.5
+    radial_limit = -21.8
+    flexion_limit = -48.6
+    extension_limit = 32.7
 
 
     while True:
